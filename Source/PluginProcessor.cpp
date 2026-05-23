@@ -27,6 +27,9 @@ DelayPluginAudioProcessor::DelayPluginAudioProcessor()
     mCircularBufferRight = nullptr;
     mCircularBufferWriteHead = 0;
     mCircularBufferLength = 0;
+
+    mDelayTimeInSamples = 0;
+    mCircularBufferReadHead = 0;
 }
 
 DelayPluginAudioProcessor::~DelayPluginAudioProcessor() {
@@ -94,6 +97,10 @@ void DelayPluginAudioProcessor::prepareToPlay(double sampleRate,
                                               int samplesPerBlock) {
     mCircularBufferLength = sampleRate * MAX_DELAY_TIME;
     mCircularBufferWriteHead = 0;
+
+    // Temp hardcode to 0.5 seconds
+    mDelayTimeInSamples = sampleRate * 0.5 /* seconds */ ;
+
     if (mCircularBufferLeft == nullptr) {
         // For both of these, you are making an array of floats with the length
         // of the total samples for the delay
@@ -149,16 +156,18 @@ void DelayPluginAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer,
     for (int channel = 0; channel < totalNumInputChannels; ++channel) {
         auto *channelData = buffer.getWritePointer(channel);
     }
-    
+
     auto *leftChannel = buffer.getWritePointer(0);
     auto *rightChannel = buffer.getWritePointer(1);
 
     for (int i = 0; i < buffer.getNumSamples(); i++) {
         mCircularBufferLeft[mCircularBufferWriteHead] = leftChannel[i];
         mCircularBufferRight[mCircularBufferWriteHead] = rightChannel[i];
-        
+
+        mCircularBufferReadHead = mCircularBufferWriteHead - mDelayTimeInSamples;
         mCircularBufferWriteHead++;
-        
+
+
         if (mCircularBufferWriteHead >= mCircularBufferLength) {
             mCircularBufferWriteHead = 0;
         }

@@ -60,6 +60,9 @@ private:
     float* mCircularBufferRight;
     int mCircularBufferWriteHead;
     int mCircularBufferLength;
+    
+    float mDelayTimeInSamples;
+    float mCircularBufferReadHead;
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DelayPluginAudioProcessor)
 };
