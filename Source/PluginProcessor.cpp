@@ -165,6 +165,9 @@ void DelayPluginAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer,
         mCircularBufferRight[mCircularBufferWriteHead] = rightChannel[i];
 
         mCircularBufferReadHead = mCircularBufferWriteHead - mDelayTimeInSamples;
+        if (mCircularBufferReadHead < 0)
+            mCircularBufferReadHead += mCircularBufferLength;
+        
         mCircularBufferWriteHead++;
 
 
