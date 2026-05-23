@@ -30,6 +30,9 @@ DelayPluginAudioProcessor::DelayPluginAudioProcessor()
 
     mDelayTimeInSamples = 0;
     mCircularBufferReadHead = 0;
+    
+    mFeedbackLeft = 0;
+    mFeedbackRight = 0;
 }
 
 DelayPluginAudioProcessor::~DelayPluginAudioProcessor() {
@@ -161,15 +164,21 @@ void DelayPluginAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer,
     auto *rightChannel = buffer.getWritePointer(1);
 
     for (int i = 0; i < buffer.getNumSamples(); i++) {
-        mCircularBufferLeft[mCircularBufferWriteHead] = leftChannel[i];
-        mCircularBufferRight[mCircularBufferWriteHead] = rightChannel[i];
+        mCircularBufferLeft[mCircularBufferWriteHead] = leftChannel[i] + mFeedbackLeft;
+        mCircularBufferRight[mCircularBufferWriteHead] = rightChannel[i] + mFeedbackRight;
 
         mCircularBufferReadHead = mCircularBufferWriteHead - mDelayTimeInSamples;
         if (mCircularBufferReadHead < 0)
             mCircularBufferReadHead += mCircularBufferLength;
         
-        buffer.addSample(0, i, mCircularBufferLeft[(int)mCircularBufferReadHead]);
-        buffer.addSample(1, i, mCircularBufferRight[(int)mCircularBufferReadHead]);
+        float delay_sample_left = mCircularBufferLeft[(int)mCircularBufferReadHead];
+        float delay_sample_right = mCircularBufferRight[(int)mCircularBufferReadHead];
+        
+        mFeedbackLeft = delay_sample_left * 0.8;
+        mFeedbackRight = delay_sample_right * 0.8;
+        
+        buffer.addSample(0, i, delay_sample_left);
+        buffer.addSample(1, i, delay_sample_right);
         
         mCircularBufferWriteHead++;
 
