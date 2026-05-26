@@ -33,6 +33,8 @@ DelayPluginAudioProcessor::DelayPluginAudioProcessor()
     
     mFeedbackLeft = 0;
     mFeedbackRight = 0;
+    
+    mDryWet = 0.5;
 }
 
 DelayPluginAudioProcessor::~DelayPluginAudioProcessor() {
@@ -177,8 +179,9 @@ void DelayPluginAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer,
         mFeedbackLeft = delay_sample_left * 0.8;
         mFeedbackRight = delay_sample_right * 0.8;
         
-        buffer.addSample(0, i, delay_sample_left);
-        buffer.addSample(1, i, delay_sample_right);
+        buffer.setSample(0, i, buffer.getSample(0, i) * (1 - mDryWet) + delay_sample_left * mDryWet);
+        buffer.setSample(1, i, buffer.getSample(1, i) * (1 - mDryWet) + delay_sample_right * mDryWet);
+
         
         mCircularBufferWriteHead++;
 

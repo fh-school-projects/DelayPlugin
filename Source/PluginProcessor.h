@@ -66,6 +66,8 @@ private:
     
     float mFeedbackLeft;
     float mFeedbackRight;
+    
+    float mDryWet;
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DelayPluginAudioProcessor)
 };
