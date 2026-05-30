@@ -32,6 +32,8 @@ public:
 
     void processBlock (juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
 
+    float lin_interp(float sample_x, float sample_x1, float inPhase);
+
     //==============================================================================
     juce::AudioProcessorEditor* createEditor() override;
     bool hasEditor() const override;
@@ -68,7 +70,9 @@ private:
     float mFeedbackRight;
     
     float mDryWet;
-    
+
+    float mDelayTimeSmoothed;
+
     juce::AudioParameterFloat* mDryWetParameter;
     juce::AudioParameterFloat* mFeedbackParameter;
     juce::AudioParameterFloat* mDelayTimeParameter;
