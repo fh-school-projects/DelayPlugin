@@ -10,6 +10,7 @@
 
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
+#include "CustomHaringKnobs.h"
 
 //==============================================================================
 /**
@@ -32,6 +33,14 @@ private:
     juce::Slider mDryWetSlider;
     juce::Slider mFeedbackSlider;
     juce::Slider mDelayTimeSlider;
+
+    juce::Label mDryWetLabel;
+    juce::Label mFeedbackLabel;
+    juce::Label mDelayTimeLabel;
+
+    HaringKnob<0> mDryWetKnobLookAndFeel;
+    HaringKnob<1> mFeedbackKnobLookAndFeel;
+    HaringKnob<2> mDelayTimeKnobLookAndFeel;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DelayPluginAudioProcessorEditor)
 };

@@ -3,6 +3,12 @@
 <JUCERPROJECT id="IaWaJB" name="DelayPlugin" projectType="audioplug" useAppConfig="0"
               addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1">
   <MAINGROUP id="oDshnN" name="DelayPlugin">
+    <GROUP id="{14CE51A1-BEFA-A025-473D-EF92344263BF}" name="Images">
+      <FILE id="VpJuEK" name="knob2.png" compile="0" resource="1" file="../../../Downloads/knob2.png"/>
+      <FILE id="LOJi6M" name="knob1.png" compile="0" resource="1" file="../../../Downloads/knob1.png"/>
+      <FILE id="qEudyS" name="knob0.png" compile="0" resource="1" file="../../../Downloads/knob0.png"/>
+      <FILE id="W3ZGQ7" name="track.png" compile="0" resource="1" file="../../../Downloads/track.png"/>
+    </GROUP>
     <GROUP id="{42CC6B40-5AB5-3369-1715-2E12DAAD3AAD}" name="Source">
       <FILE id="tmuAuC" name="PluginProcessor.cpp" compile="1" resource="0"
             file="Source/PluginProcessor.cpp"/>
