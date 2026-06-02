@@ -30,10 +30,10 @@ DelayPluginAudioProcessor::DelayPluginAudioProcessor()
 
     mDelayTimeInSamples = 0;
     mCircularBufferReadHead = 0;
-    
+
     mFeedbackLeft = 0;
     mFeedbackRight = 0;
-    
+
     mDryWet = 0.5;
 
     mDelayTimeSmoothed = 0;
@@ -103,7 +103,9 @@ void DelayPluginAudioProcessor::changeProgramName(int index,
                                                   const juce::String &newName) {
 }
 
-//==============================================================================
+// allocates the stereo delay buffers once prepareToPlay is called, sized to
+// hold the maximum delay time worth of samples at the current sample rate
+// the () at the end zero-initializes the arrays to avoid garbage on first read
 void DelayPluginAudioProcessor::prepareToPlay(double sampleRate,
                                               int samplesPerBlock) {
     mCircularBufferLength = sampleRate * MAX_DELAY_TIME;
@@ -112,15 +114,11 @@ void DelayPluginAudioProcessor::prepareToPlay(double sampleRate,
     mDelayTimeSmoothed = *mDelayTimeParameter;
 
     if (mCircularBufferLeft == nullptr) {
-        // For both of these, you are making an array of floats with the length
-        // of the total samples for the delay
         mCircularBufferLeft = new float[(int)(sampleRate * MAX_DELAY_TIME)]();
     }
     if (mCircularBufferRight == nullptr) {
         mCircularBufferRight = new float[(int)(sampleRate * MAX_DELAY_TIME)]();
     }
-    // Use this method as the place to do any pre-playback
-    // initialisation that you need..
 }
 
 void DelayPluginAudioProcessor::releaseResources() {
@@ -171,9 +169,14 @@ void DelayPluginAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer,
     auto *rightChannel = buffer.getWritePointer(1);
 
     for (int i = 0; i < buffer.getNumSamples(); i++) {
+        // lowpass smoothing (I learned about this at work!) on the delay time parameter so sudden knob
+        // moves don't cause a discontinuous jump in the read head, which would
+        // produce a click or pitch glitch
         mDelayTimeSmoothed = mDelayTimeSmoothed - 0.001 * (mDelayTimeSmoothed - *mDelayTimeParameter);
         mDelayTimeInSamples = getSampleRate() * mDelayTimeSmoothed;
 
+        // writes the dry input plus last iteration's feedback sample into the circular
+        // buffer — this is what causes the delay to repeat and decay over time
         mCircularBufferLeft[mCircularBufferWriteHead] = leftChannel[i] + mFeedbackLeft;
         mCircularBufferRight[mCircularBufferWriteHead] = rightChannel[i] + mFeedbackRight;
 
@@ -189,12 +192,16 @@ void DelayPluginAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer,
             readHead_x1 -= mCircularBufferLength;
         }
 
+        // the read head lands mDelayTimeInSamples behind the write head, wrapping
+        // around the buffer if negative — lin_interp blends between the two nearest
+        // samples so fractional delay times don't produce stepping artifacts
         float delay_sample_left = lin_interp(mCircularBufferLeft[readHead_x], mCircularBufferLeft[readHead_x1], readHeadFloat);
         float delay_sample_right = lin_interp(mCircularBufferRight[readHead_x], mCircularBufferRight[readHead_x1], readHeadFloat);
-        
+
         mFeedbackLeft = delay_sample_left * *mFeedbackParameter;
         mFeedbackRight = delay_sample_right * *mFeedbackParameter;
-        
+        // slightly strange.. at mDryWet=1 you get fully dry, at 0 fully wet
+        // worth double-checking this matches the UI.
         buffer.setSample(0, i, buffer.getSample(0, i) * *mDryWetParameter + delay_sample_left * (1 - *mDryWetParameter));
         buffer.setSample(1, i, buffer.getSample(1, i) * *mDryWetParameter + delay_sample_right * (1 - *mDryWetParameter));
 
@@ -237,6 +244,8 @@ juce::AudioProcessor *JUCE_CALLTYPE createPluginFilter() {
     return new DelayPluginAudioProcessor();
 }
 
+// inPhase is the fractional part of the read head. It blends between the two
+// neighboring samples proportionally to that fraction
 float DelayPluginAudioProcessor::lin_interp(float sample_x, float sample_x1, float inPhase)
 {
     return (1 - inPhase) * sample_x + inPhase * sample_x1;

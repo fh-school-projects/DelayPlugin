@@ -137,8 +137,7 @@ DelayPluginAudioProcessorEditor::~DelayPluginAudioProcessorEditor() {
 
 //==============================================================================
 void DelayPluginAudioProcessorEditor::paint(juce::Graphics &g) {
-    // (Our component is opaque, so we must completely fill the background with
-    // a solid colour)
+    // Cream color
     g.fillAll(juce::Colour(0xffffedd6));
 
 }
@@ -151,16 +150,20 @@ void DelayPluginAudioProcessorEditor::resized() {
     const int numKnobs = 3;
     const int totalWidth = knobSize + knobSpacing * (numKnobs - 1);
     const int totalHeight = titleHeight + knobSize + labelHeight;
+    // centers the knob group horizontally and vertically in whatever window size Ableton gives
     const int xOffset = (getWidth() - totalWidth) / 2;
     const int yOffset = (getHeight() - totalHeight) / 2;
 
     mTitleLabel.setBounds(0, yOffset, getWidth(), titleHeight);
 
+    // knobs sit directly below the title, spaced by knobSpacing rather than knobSize
+    // so there's a gap between them
     int knobY = yOffset + titleHeight;
     mDryWetSlider.setBounds(xOffset, knobY, knobSize, knobSize);
     mFeedbackSlider.setBounds(xOffset + knobSpacing, knobY, knobSize, knobSize);
     mDelayTimeSlider.setBounds(xOffset + 2 * knobSpacing, knobY, knobSize, knobSize);
 
+    // labels are pinned directly below their respective knobs using the same x offsets
     mDryWetLabel.setBounds(xOffset, knobY + knobSize, knobSize, labelHeight);
     mFeedbackLabel.setBounds(xOffset + knobSpacing, knobY + knobSize, knobSize, labelHeight);
     mDelayTimeLabel.setBounds(xOffset + 2 * knobSpacing, knobY + knobSize, knobSize, labelHeight);
