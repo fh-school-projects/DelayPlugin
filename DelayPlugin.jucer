@@ -3,6 +3,10 @@
 <JUCERPROJECT id="IaWaJB" name="DelayPlugin" projectType="audioplug" useAppConfig="0"
               addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1">
   <MAINGROUP id="oDshnN" name="DelayPlugin">
+    <GROUP id="{E0F6EC3B-8B65-1FBB-1737-D9EE75A15D63}" name="Fonts">
+      <FILE id="gty3Tf" name="ffprovidence_regular.otf" compile="0" resource="1"
+            file="../../../Library/Fonts/ffprovidence_regular.otf"/>
+    </GROUP>
     <GROUP id="{14CE51A1-BEFA-A025-473D-EF92344263BF}" name="Images">
       <FILE id="VpJuEK" name="knob2.png" compile="0" resource="1" file="../../../Downloads/knob2.png"/>
       <FILE id="LOJi6M" name="knob1.png" compile="0" resource="1" file="../../../Downloads/knob1.png"/>

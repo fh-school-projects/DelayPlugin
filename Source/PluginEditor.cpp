@@ -91,17 +91,37 @@ DelayPluginAudioProcessorEditor::DelayPluginAudioProcessorEditor(
         delayTimeParameter->endChangeGesture();
     };
 
+    // Font
+    auto typeface = juce::Typeface::createSystemTypefaceFor(
+        BinaryData::ffprovidence_regular_otf, BinaryData::ffprovidence_regular_otfSize);
+    juce::Font labelFont(typeface);
+    labelFont.setHeight(19.0f);
+
+    juce::Font titleFont(typeface);
+    titleFont.setHeight(32.0f);
+    mTitleLabel.setText("Delay", juce::dontSendNotification);
+    mTitleLabel.setJustificationType(juce::Justification::centred);
+    mTitleLabel.setFont(titleFont);
+    mTitleLabel.setColour(juce::Label::textColourId, juce::Colours::black);
+    addAndMakeVisible(mTitleLabel);
+
     // Labels
     mDryWetLabel.setText("Dry/Wet", juce::dontSendNotification);
     mDryWetLabel.setJustificationType(juce::Justification::centred);
+    mDryWetLabel.setFont(labelFont);
+    mDryWetLabel.setColour(juce::Label::textColourId, juce::Colours::black);
     addAndMakeVisible(mDryWetLabel);
 
     mFeedbackLabel.setText("Feedback", juce::dontSendNotification);
     mFeedbackLabel.setJustificationType(juce::Justification::centred);
+    mFeedbackLabel.setFont(labelFont);
+    mFeedbackLabel.setColour(juce::Label::textColourId, juce::Colours::black);
     addAndMakeVisible(mFeedbackLabel);
 
     mDelayTimeLabel.setText("Delay Time", juce::dontSendNotification);
     mDelayTimeLabel.setJustificationType(juce::Justification::centred);
+    mDelayTimeLabel.setFont(labelFont);
+    mDelayTimeLabel.setColour(juce::Label::textColourId, juce::Colours::black);
     addAndMakeVisible(mDelayTimeLabel);
 
     // Make sure that before the constructor has finished, you've set the
@@ -125,18 +145,23 @@ void DelayPluginAudioProcessorEditor::paint(juce::Graphics &g) {
 
 void DelayPluginAudioProcessorEditor::resized() {
     const int knobSize = 100;
+    const int knobSpacing = 125;
     const int labelHeight = 20;
+    const int titleHeight = 40;
     const int numKnobs = 3;
-    const int totalWidth = knobSize * numKnobs;
-    const int totalHeight = knobSize + labelHeight;
+    const int totalWidth = knobSize + knobSpacing * (numKnobs - 1);
+    const int totalHeight = titleHeight + knobSize + labelHeight;
     const int xOffset = (getWidth() - totalWidth) / 2;
     const int yOffset = (getHeight() - totalHeight) / 2;
 
-    mDryWetSlider.setBounds(xOffset, yOffset, knobSize, knobSize);
-    mFeedbackSlider.setBounds(xOffset + knobSize, yOffset, knobSize, knobSize);
-    mDelayTimeSlider.setBounds(xOffset + 2 * knobSize, yOffset, knobSize, knobSize);
+    mTitleLabel.setBounds(0, yOffset, getWidth(), titleHeight);
 
-    mDryWetLabel.setBounds(xOffset, yOffset + knobSize, knobSize, labelHeight);
-    mFeedbackLabel.setBounds(xOffset + knobSize, yOffset + knobSize, knobSize, labelHeight);
-    mDelayTimeLabel.setBounds(xOffset + 2 * knobSize, yOffset + knobSize, knobSize, labelHeight);
+    int knobY = yOffset + titleHeight;
+    mDryWetSlider.setBounds(xOffset, knobY, knobSize, knobSize);
+    mFeedbackSlider.setBounds(xOffset + knobSpacing, knobY, knobSize, knobSize);
+    mDelayTimeSlider.setBounds(xOffset + 2 * knobSpacing, knobY, knobSize, knobSize);
+
+    mDryWetLabel.setBounds(xOffset, knobY + knobSize, knobSize, labelHeight);
+    mFeedbackLabel.setBounds(xOffset + knobSpacing, knobY + knobSize, knobSize, labelHeight);
+    mDelayTimeLabel.setBounds(xOffset + 2 * knobSpacing, knobY + knobSize, knobSize, labelHeight);
 }

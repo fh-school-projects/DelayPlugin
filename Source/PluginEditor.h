@@ -34,6 +34,7 @@ private:
     juce::Slider mFeedbackSlider;
     juce::Slider mDelayTimeSlider;
 
+    juce::Label mTitleLabel;
     juce::Label mDryWetLabel;
     juce::Label mFeedbackLabel;
     juce::Label mDelayTimeLabel;
